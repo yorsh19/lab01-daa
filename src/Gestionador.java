@@ -109,27 +109,22 @@ public class Gestionador {
 
     public String[] calcularYObtenerEstadisticas() {
         Map<Integer, Integer> estadisticas = new HashMap<>();
-        // Suponiendo que numDato y dato están correctamente definidos en la clase.
-        System.out.println("numDato en calcularYObtenerEstadisticas: " + numDato);
 
-        // Recopilar estadísticas de burnout por ID.
         for (int i = 0; i <= numDato; i++) {
             Empleado empleado = dato[i];
-            System.out.println("Empleado: " + empleado);
             if (empleado.isIsBornout()) {
                 int idBurnout = empleado.getIdBornout();
                 estadisticas.put(idBurnout, estadisticas.getOrDefault(idBurnout, 0) + 1);
             }
         }
 
-        // Obtener las causas específicas y calcular porcentajes.
         int causa1 = estadisticas.getOrDefault(1, 0);
         int causa2 = estadisticas.getOrDefault(2, 0);
         int causa3 = estadisticas.getOrDefault(3, 0);
         int causa4 = estadisticas.getOrDefault(4, 0);
         int total = causa1 + causa2 + causa3 + causa4;
 
-        String[] resultados = new String[4]; // Para almacenar los porcentajes formatados.
+        String[] resultados = new String[4];
         if (total > 0) {
             resultados[0] = String.format("%.1f%%", (float) causa1 / total * 100);
             resultados[1] = String.format("%.1f%%", (float) causa2 / total * 100);
@@ -150,7 +145,7 @@ public class Gestionador {
 
         for (int i = 0; i <= numDato; i++) {
             Empleado empleado = dato[i];
-            if (empleado.isIsBornout()) { // Solo considerar empleados con burnout
+            if (empleado.isIsBornout()) {
                 int idBurnout = empleado.getIdBornout();
                 String categoriaImc = calcularImc(empleado.getPeso(), empleado.getTalla());
 
@@ -171,23 +166,20 @@ public class Gestionador {
         return resultados;
     }
 
-    public String[] obtenerEstadisticasComoString() {
-        Map<Integer, Map<String, Integer>> estadisticas = estadisticasImcPorIdBurnout();
-        List<String> reporte = new ArrayList<>();
+    public String[] contarBajoPesoConBurnoutPorCausa() {
+        int contador = 0;
 
-        for (Map.Entry<Integer, Map<String, Integer>> entry : estadisticas.entrySet()) {
-            int idBurnout = entry.getKey();
-            Map<String, Integer> categorias = entry.getValue();
-            String estadisticasString = "ID Burnout " + idBurnout + ": ";
-            estadisticasString += "Bajo Peso: " + categorias.get("Bajo Peso") + ", ";
-            estadisticasString += "Peso Normal: " + categorias.get("Peso normal") + ", ";
-            estadisticasString += "Sobrepeso: " + categorias.get("Sobrepeso") + ", ";
-            estadisticasString += "Obeso: " + categorias.get("Obeso");
-            System.out.println("estadisticasString: " + estadisticasString);
-            reporte.add(estadisticasString);
+        for (int i = 0; i <= numDato; i++) {
+            Empleado empleado = dato[i];
+            if (empleado.isIsBornout() && empleado.getIdBornout() == 4) {
+                if (calcularImc(empleado.getPeso(), empleado.getTalla()).equals("Bajo Peso")) {
+                    contador++;
+                }
+            }
         }
 
-        return reporte.toArray(new String[0]); // Convertir la lista a un array de strings
+        String[] resultado = {String.valueOf(contador)};
+        return resultado;
     }
 
 }

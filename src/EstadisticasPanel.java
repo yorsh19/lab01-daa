@@ -1,5 +1,7 @@
 
 import java.util.Map;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -24,7 +26,8 @@ public class EstadisticasPanel extends javax.swing.JPanel {
         this.gestionador = gestionador;  // Asignación correcta del parámetro al campo de la clase
         initComponents();
         cargarEstadisticas();
-        
+        obtenerEstadisticasN2();
+        lblNum3.setText(gestionador.contarBajoPesoConBurnoutPorCausa()[0] + " persona");
     }
 
     private void cargarEstadisticas() {
@@ -35,9 +38,56 @@ public class EstadisticasPanel extends javax.swing.JPanel {
         lblCausa3.setText(estadisticas[2]);
         lblCausa4.setText(estadisticas[3]);
     }
-    
-    private void obtenerEstadisticasN2(){
-        
+
+    private void obtenerEstadisticasN2() {
+        // Supongamos que tienes un método que retorna un mapa con las estadísticas de IMC por ID de burnout.
+        Map<Integer, Map<String, Integer>> estadisticas = gestionador.estadisticasImcPorIdBurnout();
+
+// Definir los arrays para las filas y columnas de la JTable.
+        String[] columnas = {"","Sobrecarga laboral", "No tener tareas completas", "Mucha presión", "Maltratado por sus superiores"};
+        String[][] datos = {
+            {"Bajo peso", "0", "0", "0", "0"},
+            {"Peso normal", "0", "0", "0", "0"},
+            {"Sobrepeso", "0", "0", "0", "0"},
+            {"Obeso", "0", "0", "0", "0"}
+        };
+
+// Llenar los datos para la JTable basados en el mapa.
+        for (Map.Entry<Integer, Map<String, Integer>> entry : estadisticas.entrySet()) {
+            int causaId = entry.getKey(); // La causa de burnout.
+            Map<String, Integer> counts = entry.getValue();
+
+            // Asumiendo que el idBurnout corresponde directamente al índice de la columna (esto puede requerir ajustes).
+            int columnaIndex = causaId - 1; // Ajusta esta línea según corresponda a cómo estén organizados tus IDs de causas.
+
+            for (Map.Entry<String, Integer> countEntry : counts.entrySet()) {
+                String imcCategoria = countEntry.getKey();
+                Integer cantidad = countEntry.getValue();
+
+                // Asumiendo que las categorías de IMC corresponden directamente a los índices de las filas.
+                int rowIndex = -1;
+                switch (imcCategoria) {
+                    case "Bajo Peso":
+                        rowIndex = 0;
+                        break;
+                    case "Peso normal":
+                        rowIndex = 1;
+                        break;
+                    case "Sobrepeso":
+                        rowIndex = 2;
+                        break;
+                    case "Obeso":
+                        rowIndex = 3;
+                        break;
+                }
+                if (rowIndex != -1 && columnaIndex >= 0 && columnaIndex < columnas.length) {
+                    datos[rowIndex][columnaIndex + 1] = cantidad.toString(); // El +1 es para ajustar el índice debido a la columna de categorías IMC.
+                }
+            }
+        }
+// Crear un modelo de tabla con estos datos y nombres de columna.
+        DefaultTableModel tableModel = new DefaultTableModel(datos, columnas);
+        jTable1.setModel(tableModel);
     }
 
     /**
@@ -60,15 +110,10 @@ public class EstadisticasPanel extends javax.swing.JPanel {
         lblCausa3 = new javax.swing.JLabel();
         lblCausa4 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        lblBpCausa1 = new javax.swing.JLabel();
-        lblPnCausa1 = new javax.swing.JLabel();
-        lblSpCausa1 = new javax.swing.JLabel();
-        lblObCausa1 = new javax.swing.JLabel();
+        lblNum3 = new javax.swing.JLabel();
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -84,17 +129,22 @@ public class EstadisticasPanel extends javax.swing.JPanel {
 
         jLabel6.setText("Maltratado por sus superiores:");
 
-        jLabel7.setText("2. Estadísticas  por cada causa y el IMC.");
+        jLabel7.setText("3. Estadísticas de bajo peso con el síndrome atribuye la causa maltrato de los superiores.");
 
-        jLabel8.setText("Sobrecarga laboral");
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
 
-        jLabel9.setText("Bajo peso:");
-
-        jLabel10.setText("Peso normal:");
-
-        jLabel11.setText("Sobrepeso:");
-
-        jLabel12.setText("Obeso:");
+        jLabel8.setText("2. Estadísticas  por cada causa y el IMC.");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -111,18 +161,13 @@ public class EstadisticasPanel extends javax.swing.JPanel {
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblCausa1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblCausa3, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -130,26 +175,19 @@ public class EstadisticasPanel extends javax.swing.JPanel {
                             .addComponent(lblCausa2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(55, 55, 55))
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel8)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(6, 6, 6)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel10)
-                                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.LEADING))
-                                        .addGap(56, 56, 56)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(lblBpCausa1, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(lblPnCausa1, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(lblSpCausa1, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(lblObCausa1, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                .addGap(12, 12, 12)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 575, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel8))
                         .addGap(0, 0, Short.MAX_VALUE))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addComponent(lblNum3, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -174,39 +212,21 @@ public class EstadisticasPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblCausa4, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(jLabel9)
-                                            .addComponent(lblBpCausa1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel10))
-                                    .addComponent(lblPnCausa1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel11))
-                            .addComponent(lblSpCausa1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel12))
-                    .addComponent(lblObCausa1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(113, Short.MAX_VALUE))
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblNum3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(359, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -214,14 +234,12 @@ public class EstadisticasPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JLabel lblBpCausa1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblCausa1;
     private javax.swing.JLabel lblCausa2;
     private javax.swing.JLabel lblCausa3;
     private javax.swing.JLabel lblCausa4;
-    private javax.swing.JLabel lblObCausa1;
-    private javax.swing.JLabel lblPnCausa1;
-    private javax.swing.JLabel lblSpCausa1;
+    private javax.swing.JLabel lblNum3;
     // End of variables declaration//GEN-END:variables
 }
