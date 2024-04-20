@@ -424,7 +424,7 @@ public class JEmpleadoFrame extends javax.swing.JFrame {
     private void btnEstadisticasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEstadisticasActionPerformed
         JFrame frame = new JFrame("Estadísticas");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.getContentPane().add(new EstadisticasPanel());
+        frame.getContentPane().add(new EstadisticasPanel(gestionador));
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
